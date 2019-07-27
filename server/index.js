@@ -25,13 +25,17 @@ const scrapePrices = async username => {
     
     let rand = Math.floor(Math.random() * 1000000) + 1;
 
+    await page.waitFor(10000);
+
     let pageContentAsText = await page.content();
+
     let isCaptcha = pageContentAsText.includes('Are you a person or a robot?');
     
     if ( isCaptcha ) {
         console.log(`Captcha = isCaptcha`);
-        console.log('Wait for 5 seconds and then close the browser.');
-        await page.waitFor(5000);
+        console.log('Wait for 1 seconds and then close the browser.');
+        await page.waitFor(1000);
+
         await browser.close();
         console.log('Browser closed.');
         scrapePrices();
@@ -39,7 +43,6 @@ const scrapePrices = async username => {
     }
 
     else {
-        // If the captcha doesn't show up fast enough this else clause will run
         await page.waitFor(1000);
         page.screenshot({path: `${rand}.png`});
         console.log('screenshot!');
