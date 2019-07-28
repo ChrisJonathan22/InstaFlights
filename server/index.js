@@ -1,17 +1,17 @@
 let express = require('express');
 let fs = require('fs');
-let cors = require('cors')({ origin: true });
-let $ = require('cheerio');
+// let cors = require('cors')({ origin: true });
+// let $ = require('cheerio');
 let tesseract = require('tesseract.js');
 let randomUserAgent = require('random-useragent');
 let puppeeter = require('puppeteer');
-let fetch = require('node-fetch');
-let extractor = require('unfluff');
+// let fetch = require('node-fetch');
+// let extractor = require('unfluff');
 let flightsData;
 let port = 3000;
 let app = express();
 
-const scrapePrices = async username => {
+const scrapePrices = async () => {
     try {
     let browser = await puppeeter.launch( { headless: false } );
     
@@ -48,13 +48,14 @@ const scrapePrices = async username => {
         const text = await page.evaluate(element => element.textContent, element);
         
         console.log('This is the cheapest price', text);
-        page.screenshot({path: `${rand}.png`});
+        page.screenshot({path: 'screenshot.png'});
+        // page.screenshot({path: `${rand}.png`});
         console.log('screenshot!');
-        console.log(`screenshot file name = ${rand}.png`);
+        // console.log(`screenshot file name = ${rand}.png`);
         // https://cdn8.openculture.com/2018/11/21001706/Junius.jpg
         await page.waitFor(5000);
 
-        tesseract.recognize('./screentshot.png', {
+        tesseract.recognize('./screenshot.png', {
             lang: 'eng'
         })
         .progress(progress => {
@@ -67,20 +68,7 @@ const scrapePrices = async username => {
             tesseract.terminate();
         });
     }
-
-
-    
-
-    // let pageData;
-
-    // Turn image data into text and then find the values
-
-    
     await page.waitFor(5000);
-
-
-    // Reference https://stackoverflow.com/questions/55678095/bypassing-captchas-with-headless-chrome-using-puppeteer
-
     }
 
     catch (error) {
@@ -90,18 +78,7 @@ const scrapePrices = async username => {
 
 scrapePrices();
 
-// tesseract.recognize(image, {
-//     lang: 'eng'
-// })
-// .progress(({ progress, status }) => {
-//     if (!progress || !status || status !== 'recognizing text') {
-//         return null;
-//     }
-//     let p = (progress * 100).toFixed(2);
-//     console.log('this is the status', p);
-// });
-
-app.get('/', (req, res) => {
+app.get('/flights', (req, res) => {
     res.json({
         message: 'Successful request.'
     });

@@ -1,18 +1,15 @@
 window.addEventListener('load', () => {
-    let btn = document.querySelector("div[data-element='referral-button']");
 
         document.addEventListener('click', (evt) => {
-            // if (evt.target.tagName === 'A') {
-            //     evt.preventDefault();
-            //     console.log(evt.target);
-                
-            // } 
-            evt.preventDefault();
             console.log(evt.target);
+            if (evt.target.className === '_2Yxt0UffkEUTzOmXYgxn2s' || evt.target.className === '_3X6DkTXBbM_wHPdMHR0KaU' || evt.target.tagName === 'A' || evt.target.tagName === 'DIV' || evt.target.parentElement.tagName === 'SVG') {
+                evt.preventDefault();
+                console.log(evt.target);
+                
+            } 
+            // evt.preventDefault();
+            // console.log(evt.target);
         }, false);
-
-
-    console.log(btn);
 }, false);
 
 // let apiKey = 'prtl6749387986743898559646983194';
@@ -28,22 +25,4 @@ window.addEventListener('load', () => {
     https://skyscanner.github.io/slate/?_ga=1.104705984.172843296.1446781555#flights-browse-prices
 */
 
-let flightsData;
 
-async function getFlights () {
-    let fetchFlights = await fetch('http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/FR/eur/en-US/uk/us/anytime/anytime?apikey=prtl6749387986743898559646983194', {
-                    mode: 'no-cors',
-                    crossOrigin: null,
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-    });
-    let json = await fetchFlights.json();
-    flightsData = json;
-    console.log(fetchFlights);
-}
-
-getFlights();
-
-// console.log(flightsData.Quotes);
