@@ -43,11 +43,29 @@ const scrapePrices = async username => {
     }
 
     else {
-        await page.waitFor(1000);
+        await page.waitFor(5000);
+        const element = await page.$('[data-tab="price"] .fqs-price');
+        const text = await page.evaluate(element => element.textContent, element);
+        
+        console.log('This is the cheapest price', text);
         page.screenshot({path: `${rand}.png`});
         console.log('screenshot!');
         console.log(`screenshot file name = ${rand}.png`);
-        // await browser.close();
+        // https://cdn8.openculture.com/2018/11/21001706/Junius.jpg
+        await page.waitFor(5000);
+
+        tesseract.recognize('./screentshot.png', {
+            lang: 'eng'
+        })
+        .progress(progress => {
+            console.log('progress', progress.progress);
+            let p = (progress.progress * 100).toFixed(2);
+            console.log('this is the status', p);
+        })
+        .then(result => {
+            console.log('result', result.text);
+            tesseract.terminate();
+        });
     }
 
 
@@ -59,34 +77,16 @@ const scrapePrices = async username => {
 
     
     await page.waitFor(5000);
-    // page.screenshot({path: 'screentshot.png'});
-//     await page.evaluate( () => {
-//     let priceElement = document.querySelector('.fqs-type');
-//     pageData = priceElement.innerHTML;
-//     return priceElement.innerHTML;
-// });
+
 
     // Reference https://stackoverflow.com/questions/55678095/bypassing-captchas-with-headless-chrome-using-puppeteer
 
-    // await browser.close();
+    }
 
-    // console.log(pageData);
+    catch (error) {
+        console.error(error);
+    }
 }
-
-catch (error) {
-    console.error(error);
-}
-    
-    // return data;
-  
-}
-
-// let image = fs.readFile('./screentshot.png', (err, data) => {
-//     if (err) throw err;
-//     console.log(data);
-//     return data;
-// });
-// console.log(image);
 
 scrapePrices();
 
