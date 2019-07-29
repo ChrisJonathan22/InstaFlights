@@ -9,6 +9,21 @@
 </head>
 <body>
     <div data-skyscanner-widget="FlightSearchWidget" data-locale="en-GB"></div>
+    <div class="input-container">
+        <div class="email-container">
+            <label for="email">Email</label>
+            <input type="email" name="email" class="email-input" placeholder="Email...">
+        </div>
+        <div class="price-container">
+            <label for="number">Price</label>
+            <input type="number" name="price" class="price-input" placeholder="Price...">
+        </div>
+       
+    </div>
+    <div class="btn-container">
+        <a class="submit-btn" href="#">Submit</a>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://widgets.skyscanner.net/widget-server/js/loader.js" async></script>
     <script src="js/script.js"></script>
 </body>

@@ -76,7 +76,7 @@ const scrapePrices = async () => {
     }
 }
 
-scrapePrices();
+// scrapePrices();
 
 app.get('/flights', (req, res) => {
     res.json({

@@ -12,6 +12,16 @@ window.addEventListener('load', () => {
         }, false);
 }, false);
 
+document.querySelector('SVG').addEventListener('mouseenter', (evt) => {
+    evt.preventDefault();
+}, false);
+
+axios.get('http://localhost:3000/flights').then((res) => {
+    console.log(res);
+}).catch((err) => {
+    console.log(err);
+});
+
 // let apiKey = 'prtl6749387986743898559646983194';
 // let url = `http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/${country}/${currency}/${locale}/
 // ${originPlace}/
