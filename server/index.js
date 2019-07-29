@@ -1,16 +1,16 @@
-let express = require('express');
-let fs = require('fs');
-// let cors = require('cors')({ origin: true });
-// let $ = require('cheerio');
-let tesseract = require('tesseract.js');
-let randomUserAgent = require('random-useragent');
-let puppeeter = require('puppeteer');
-// let fetch = require('node-fetch');
-// let extractor = require('unfluff');
-let flightsData;
-let port = 3000;
-let app = express();
-
+const express = require('express');
+const fs = require('fs');
+const cors = require('cors');
+const tesseract = require('tesseract.js');
+const randomUserAgent = require('random-useragent');
+const puppeeter = require('puppeteer');
+const port = 3000;
+const app = express();
+const corsOptions = {
+    origin: "http://192.168.0.18:5500",
+    optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 const scrapePrices = async () => {
     try {
     let browser = await puppeeter.launch( { headless: false } );
