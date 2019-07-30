@@ -1,4 +1,6 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const fs = require('fs');
 const cors = require('cors');
 const tesseract = require('tesseract.js');
@@ -11,6 +13,8 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json());
 const scrapePrices = async () => {
     try {
     let browser = await puppeeter.launch( { headless: false } );
@@ -78,10 +82,13 @@ const scrapePrices = async () => {
 
 // scrapePrices();
 
-app.get('/flights', (req, res) => {
+app.post('/flights', (req, res) => {
     res.json({
         message: 'Successful request.'
     });
+    const obj = JSON.parse(req.body.body);
+    // console.log(obj.price);
+    console.log(obj);
 });
 
 app.listen(port, console.log(`listening on port ${port}.`));
