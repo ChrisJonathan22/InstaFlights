@@ -131,7 +131,7 @@ const TOKEN_PATH = 'token.json';
 fs.readFile('credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Gmail API.
-  authorize(JSON.parse(content), listLabels);
+  authorize(JSON.parse(content), sendMessage);
 });
 
 /**
@@ -207,17 +207,29 @@ function listLabels(auth) {
   });
 }
 
-function sendMessage(userId, email, callback) {
+function sendMessage(userId, email, auth) {
     // Using the js-base64 library for encoding:
     // https://www.npmjs.com/package/js-base64
-    var base64EncodedEmail = Base64.encodeURI(email);
-    var request = google.gmail.users.messages.send({
-      'userId': userId,
-      'resource': {
-        'raw': base64EncodedEmail
-      }
+    // var base64EncodedEmail = Base64.encodeURI(email);
+    // var request = google.gmail({version: 'v1', auth}).users.messages.send({
+    //   'userId': userId,
+    //   'resource': {
+    //     'raw': base64EncodedEmail
+    //   }
+    // });
+    // request.execute(callback);
+    // var raw = makeBody('myrealmail@gmail.com', 'myrealmail@gmail.com', 'subject', 'message test');
+    google.gmail({version: 'v1', auth}).users.messages.send({
+        auth: auth,
+        userId: 'me',
+        message: {
+            raw: 'Test'
+        }
+    }, function(err, response) {
+        response.send(err || response)
     });
-    request.execute(callback);
   }
 
-  sendMessage('me');
+  sendMessage('me', 'christophereko@hotmail.fr', () => {
+    console.log('Test');
+  });
