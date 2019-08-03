@@ -26,10 +26,11 @@ app.post('/flights', (req, res) => {
     const obj = JSON.parse(req.body.body);
     link = obj.link;
     console.log(link);
-    scrapePrices(link);
+    scrape.scrapePrices(link);
 });
 
-scrape.scrapePrices(link);
+
+sendEmail();
 
 
 app.listen(port, console.log(`listening on port ${port}.`));

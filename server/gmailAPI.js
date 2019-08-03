@@ -98,9 +98,11 @@ const makeBody = (to, from, subject, message) => {
 }
 
 // Send email
-const sendEmail = (auth, link, userEmail) => {
+const sendEmail = (auth, link, userEmail = 'christophereko@hotmail.fr') => {
   const gmail = google.gmail({version: 'v1', auth});
-  const raw = makeBody('christophereko@hotmail.fr', 'freezyjchris@gmail.com', `Great news! we have found a flight matching your criteria.' 'Here's a link ${link} where you can purchase your ticket and here's a screentshot of the website.`);
+  const raw = makeBody(userEmail,
+   'freezyjchris@gmail.com', 'Great news! we have found a flight matching your criteria.',
+   `Here's a link ${link} where you can purchase your ticket and here's a screentshot of the website.`);
     gmail.users.messages.send({
       auth: auth,
       userId: 'me',
@@ -108,7 +110,18 @@ const sendEmail = (auth, link, userEmail) => {
           raw: raw
       }
   }, (err, res) => {
-      res.send(err || res);
+      // res.send(err || res);
+      if (err) {
+        // console.log('There has been an error', err);
+        throw err;
+      }
+      // else {
+      //   console.log('Email successfully sent! status = ', res.status);
+      //   console.log(res);
+      // }
+      let status = res.status ? res.status : 'Status unavailable';
+      console.log('Email successfully sent! status = ', status);
+        console.log(res);
   });
 }
 

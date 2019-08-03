@@ -2,7 +2,7 @@ const tesseract = require('tesseract.js');
 const randomUserAgent = require('random-useragent');
 const puppeeter = require('puppeteer');
 
-module.exports.scrapePrices = async (url) => {
+let scrapePrices = async (url) => {
     try {
     let browser = await puppeeter.launch( { headless: false } );
     
@@ -29,7 +29,7 @@ module.exports.scrapePrices = async (url) => {
 
         await browser.close();
         console.log('Browser closed.');
-        scrapePrices();
+        scrapePrices(url);
         console.log('Function relaunched.');
     }
 
@@ -63,3 +63,5 @@ module.exports.scrapePrices = async (url) => {
         console.error(error);
     }
 }
+
+module.exports.scrapePrices = scrapePrices;
