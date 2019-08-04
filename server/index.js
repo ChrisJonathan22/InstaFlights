@@ -1,11 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const scrape = require('./scrape');
-const makeEmailBody = require('./gmailAPI').makeBody;
 const sendEmail = require('./gmailAPI').sendEmail;
 const mongoose = require('mongoose');
 const cors = require('cors');
-let link;
+let url;
 
 const port = 3000;
 const app = express();
@@ -24,14 +23,9 @@ app.post('/flights', (req, res) => {
         message: 'Successful request.'
     });
     const obj = JSON.parse(req.body.body);
-    link = obj.link;
-    console.log(link);
-    scrape.scrapePrices(link);
+    url = obj.url;
+    scrape.scrapePrices(url);
 });
-
-
-sendEmail();
-
 
 app.listen(port, console.log(`listening on port ${port}.`));
 
