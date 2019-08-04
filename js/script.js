@@ -1,7 +1,7 @@
 const flightData = {
     email: "",
     price: 0,
-    link: ""
+    url: ""
 };
 
 function sendFlightData(data) {
@@ -20,7 +20,7 @@ const submitBtn = document.querySelector('.submit-btn');
 submitBtn.addEventListener('click', () => {
     flightData.email = document.querySelector('.email-input').value;
     flightData.price = document.querySelector('.price-input').value;
-    flightData.link = document.querySelector('[data-element="referral-button"] a').href;
+    flightData.url = document.querySelector('[data-element="referral-button"] a').href;
     sendFlightData(flightData);
 }, false);
 

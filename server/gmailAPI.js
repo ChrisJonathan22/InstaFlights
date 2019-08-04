@@ -2,7 +2,7 @@ const Base64 = require('js-base64').Base64;
 const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
-
+// Work on successfully return the authentication object with the credentials from authorize
 
 // Client ID and API key from the Developer Console
 const CLIENT_ID = '153961427173-8sn3madr2pcsa54j8lf5c6thk0q07ujo.apps.googleusercontent.com';
@@ -21,11 +21,12 @@ const SCOPES = ['https://mail.google.com/',
 const TOKEN_PATH = 'token.json';
 
 // Load client secrets from a local file.
-fs.readFile('credentials.json', (err, content) => {
-  if (err) return console.log('Error loading client secret file:', err);
-  // Authorize a client with credentials, then call the Gmail API.
-  authorize(JSON.parse(content), sendEmail);
-});
+// fs.readFile('credentials.json', (err, content) => {
+//   if (err) return console.log('Error loading client secret file:', err);
+//   // Authorize a client with credentials, then call the Gmail API.
+//   // authorize(JSON.parse(content), sendEmail);
+//   authorize(JSON.parse(content), sendEmail);
+// });
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -33,17 +34,17 @@ fs.readFile('credentials.json', (err, content) => {
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback) {
+const authorize = (credentials) => {
   const {client_secret, client_id, redirect_uris} = credentials.installed;
-  const oAuth2Client = new google.auth.OAuth2(
+  let oAuth2Client = new google.auth.OAuth2(
       client_id, client_secret, redirect_uris[0]);
-
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) return getNewToken(oAuth2Client, callback);
-    oAuth2Client.setCredentials(JSON.parse(token));
-    callback(oAuth2Client);
+    if (err) return getNewToken(oAuth2Client);
+    oAuth2Client =  oAuth2Client.setCredentials(JSON.parse(token));
   });
+  console.log('this is the authentication object', oAuth2Client);
+  return oAuth2Client;
 }
 
 /**
@@ -98,11 +99,12 @@ const makeBody = (to, from, subject, message) => {
 }
 
 // Send email
-const sendEmail = (auth, link, userEmail = 'christophereko@hotmail.fr') => {
+const sendEmail = (auth, url) => {
+  // console.log('this is the authentication', auth);
   const gmail = google.gmail({version: 'v1', auth});
-  const raw = makeBody(userEmail,
+  const raw = makeBody('christophereko@hotmail.fr',
    'freezyjchris@gmail.com', 'Great news! we have found a flight matching your criteria.',
-   `Here's a link ${link} where you can purchase your ticket and here's a screentshot of the website.`);
+   `Here's a link ${url} where you can purchase your ticket and here's a screentshot of the website.`);
     gmail.users.messages.send({
       auth: auth,
       userId: 'me',
@@ -112,18 +114,21 @@ const sendEmail = (auth, link, userEmail = 'christophereko@hotmail.fr') => {
   }, (err, res) => {
       // res.send(err || res);
       if (err) {
-        // console.log('There has been an error', err);
+        console.log('There has been an error', err);
         throw err;
       }
       // else {
       //   console.log('Email successfully sent! status = ', res.status);
       //   console.log(res);
       // }
-      let status = res.status ? res.status : 'Status unavailable';
-      console.log('Email successfully sent! status = ', status);
-        console.log(res);
+      else {
+        let status = res.status ? res.status : 'Status unavailable';
+        console.log('Email successfully sent! status = ', status);
+        console.log('Email sent!');
+      }
   });
 }
 
+module.exports.authorize = authorize;
 module.exports.makeBody = makeBody;
 module.exports.sendEmail = sendEmail;

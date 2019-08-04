@@ -1,3 +1,6 @@
+const fs = require('fs');
+const authorize = require('./gmailAPI').authorize;
+const sendEmail = require('./gmailAPI').sendEmail;
 const tesseract = require('tesseract.js');
 const randomUserAgent = require('random-useragent');
 const puppeeter = require('puppeteer');
@@ -39,7 +42,7 @@ let scrapePrices = async (url) => {
         const text = await page.evaluate(element => element.textContent, element);
         
         console.log('This is the cheapest price', text);
-        page.screenshot({path: 'screenshot.png'});
+        await page.screenshot({path: 'screenshot.png'});
         console.log('screenshot!');
         await page.waitFor(5000);
 
@@ -47,14 +50,24 @@ let scrapePrices = async (url) => {
             lang: 'eng'
         })
         .progress(progress => {
-            console.log('progress', progress.progress);
+            // console.log('progress', progress.progress);
             let p = (progress.progress * 100).toFixed(2);
-            console.log('this is the status', p);
+            // console.log('this is the status', p);
         })
         .then(result => {
             console.log('result', result.text);
             tesseract.terminate();
         });
+        // Email sent
+        // await sendEmail("", url);
+        fs.readFile('credentials.json', (err, content) => {
+            if (err) return console.log('Error loading client secret file:', err);
+            // Authorize a client with credentials, then call the Gmail API.
+            // authorize(JSON.parse(content), sendEmail);
+            const auth = authorize(JSON.parse(content));
+            // console.log('this is the authentication', auth);
+            sendEmail(auth, url);
+          });
     }
     await page.waitFor(5000);
     }
