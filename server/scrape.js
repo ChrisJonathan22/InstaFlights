@@ -63,10 +63,10 @@ let scrapePrices = async (url) => {
         fs.readFile('credentials.json', (err, content) => {
             if (err) return console.log('Error loading client secret file:', err);
             // Authorize a client with credentials, then call the Gmail API.
-            // authorize(JSON.parse(content), sendEmail);
+            authorize(JSON.parse(content));
             const auth = authorize(JSON.parse(content));
-            // console.log('this is the authentication', auth);
-            sendEmail(auth, url);
+            console.log('this is the authentication', auth);
+            // sendEmail(auth, url);
           });
     }
     await page.waitFor(5000);
