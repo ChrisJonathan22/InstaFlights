@@ -34,24 +34,21 @@ const TOKEN_PATH = 'token.json';
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-const authorize = (credentials) => {
+const authorize = async (credentials) => {
   const {client_secret, client_id, redirect_uris} = credentials.installed;
   let oAuth2Client = new google.auth.OAuth2(
-      client_id, client_secret, redirect_uris[0]);
-      let obj;
-  // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) return getNewToken(oAuth2Client);
-    // console.log('this is the authentication object', oAuth2Client);
-    // oAuth2Client.setCredentials(JSON.parse(token));
-    // console.log('this is the authentication obj', obj);
-    oAuth2Client.setCredentials(JSON.parse(token));
-    obj = oAuth2Client;
-    return oAuth2Client;
-  });
-  // console.log('this is the authentication object', oAuth2Client);
-  // obj = oAuth2Client;
-  // return oAuth2Client;
+    client_id, client_secret, redirect_uris[0]);
+  
+    // I've opted to use the Synchronous readFile method because with the Asynchronous method the value
+    // was always undefined
+  let content = fs.readFileSync(TOKEN_PATH);
+
+  if (!content) {
+    getNewToken(oAuth2Client);
+  }
+
+  oAuth2Client.setCredentials(JSON.parse(content));
+  return oAuth2Client;
 }
 
 /**

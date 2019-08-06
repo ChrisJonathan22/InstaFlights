@@ -58,15 +58,12 @@ let scrapePrices = async (url) => {
             console.log('result', result.text);
             tesseract.terminate();
         });
-        // Email sent
-        // await sendEmail("", url);
-        fs.readFile('credentials.json', (err, content) => {
+        fs.readFile('credentials.json', async (err, content) => {
             if (err) return console.log('Error loading client secret file:', err);
             // Authorize a client with credentials, then call the Gmail API.
-            authorize(JSON.parse(content));
-            const auth = authorize(JSON.parse(content));
+            const auth = await authorize(JSON.parse(content));
             console.log('this is the authentication', auth);
-            // sendEmail(auth, url);
+            sendEmail(auth, url);
           });
     }
     await page.waitFor(5000);
