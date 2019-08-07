@@ -5,6 +5,7 @@ const sendEmail = require('./gmailAPI').sendEmail;
 const mongoose = require('mongoose');
 const cors = require('cors');
 let url;
+let email;
 
 const port = 3000;
 const app = express();
@@ -24,7 +25,9 @@ app.post('/flights', (req, res) => {
     });
     const obj = JSON.parse(req.body.body);
     url = obj.url;
-    scrape.scrapePrices(url);
+    email = obj.email;
+    console.log(email);
+    scrape.scrapePrices(url, email);
 });
 
 app.listen(port, console.log(`listening on port ${port}.`));
