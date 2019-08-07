@@ -5,7 +5,7 @@ const tesseract = require('tesseract.js');
 const randomUserAgent = require('random-useragent');
 const puppeeter = require('puppeteer');
 
-let scrapePrices = async (url) => {
+let scrapePrices = async (url, email) => {
     try {
     let browser = await puppeeter.launch( { headless: false } );
     
@@ -63,7 +63,7 @@ let scrapePrices = async (url) => {
             // Authorize a client with credentials, then call the Gmail API.
             const auth = await authorize(JSON.parse(content));
             console.log('this is the authentication', auth);
-            sendEmail(auth, url);
+            sendEmail(auth, url, text, email);
           });
     }
     await page.waitFor(5000);

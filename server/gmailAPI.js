@@ -41,7 +41,7 @@ const authorize = async (credentials) => {
   
     // I've opted to use the Synchronous readFile method because with the Asynchronous method the value
     // was always undefined
-  let content = fs.readFileSync(TOKEN_PATH);
+  let content = fs.readFileSync(TOKEN_PATH);  
 
   if (!content) {
     getNewToken(oAuth2Client);
@@ -103,12 +103,13 @@ const makeBody = (to, from, subject, message) => {
 }
 
 // Send email
-const sendEmail = (auth, url) => {
+const sendEmail = (auth, url, price, email) => {
   // console.log('this is the authentication', auth);
+  console.log('email', email, 'and price', price);
   const gmail = google.gmail({version: 'v1', auth});
-  const raw = makeBody('christophereko@hotmail.fr',
+  const raw = makeBody(email,
    'freezyjchris@gmail.com', 'Great news! we have found a flight matching your criteria.',
-   `Here's a link ${url} where you can purchase your ticket and here's a screentshot of the website.`);
+   `The cheapest flight price found is ${price} and here's a link where you can purchase your ticket and here's a screentshot of the website.${url} `);
     gmail.users.messages.send({
       auth: auth,
       userId: 'me',
