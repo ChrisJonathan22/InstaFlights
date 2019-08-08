@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 let url;
 let email;
+let price;
 
 const port = 3000;
 const app = express();
@@ -26,8 +27,10 @@ app.post('/flights', (req, res) => {
     const obj = JSON.parse(req.body.body);
     url = obj.url;
     email = obj.email;
+    price = obj.price;
+
     console.log(email);
-    scrape.scrapePrices(url, email);
+    scrape.scrapePrices(url, email, price);
 });
 
 app.listen(port, console.log(`listening on port ${port}.`));

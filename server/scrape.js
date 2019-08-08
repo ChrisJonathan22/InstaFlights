@@ -5,7 +5,7 @@ const tesseract = require('tesseract.js');
 const randomUserAgent = require('random-useragent');
 const puppeeter = require('puppeteer');
 
-let scrapePrices = async (url, email) => {
+let scrapePrices = async (url, email, price) => {
     try {
     let browser = await puppeeter.launch( { headless: false } );
     
@@ -40,31 +40,47 @@ let scrapePrices = async (url, email) => {
         await page.waitFor(5000);
         const element = await page.$('[data-tab="price"] .fqs-price');
         const text = await page.evaluate(element => element.textContent, element);
-        
-        console.log('This is the cheapest price', text);
-        await page.screenshot({path: 'screenshot.png'});
-        console.log('screenshot!');
-        await page.waitFor(5000);
+        let priceAsNumber = text.replace(/\D/g,'');
+        priceAsNumber = parseInt(priceAsNumber);
+        console.log('price from site', priceAsNumber);
+        console.log('price from client', price);
 
-        tesseract.recognize('./screenshot.png', {
-            lang: 'eng'
-        })
-        .progress(progress => {
-            // console.log('progress', progress.progress);
-            let p = (progress.progress * 100).toFixed(2);
-            // console.log('this is the status', p);
-        })
-        .then(result => {
-            console.log('result', result.text);
-            tesseract.terminate();
-        });
-        fs.readFile('credentials.json', async (err, content) => {
-            if (err) return console.log('Error loading client secret file:', err);
-            // Authorize a client with credentials, then call the Gmail API.
-            const auth = await authorize(JSON.parse(content));
-            console.log('this is the authentication', auth);
-            sendEmail(auth, url, text, email);
-          });
+        if (priceAsNumber <= price) {
+            console.log('This is the cheapest price', text);
+            await page.screenshot({path: 'screenshot.png'});
+            console.log('screenshot!');
+            await page.waitFor(5000);
+
+            tesseract.recognize('./screenshot.png', {
+                lang: 'eng'
+            })
+            .progress(progress => {
+                // console.log('progress', progress.progress);
+                let p = (progress.progress * 100).toFixed(2);
+                // console.log('this is the status', p);
+            })
+            .then(result => {
+                console.log('result', result.text);
+                tesseract.terminate();
+            });
+            fs.readFile('credentials.json', async (err, content) => {
+                if (err) return console.log('Error loading client secret file:', err);
+                // Authorize a client with credentials, then call the Gmail API.
+                const auth = await authorize(JSON.parse(content));
+                console.log('this is the authentication', auth);
+                sendEmail(auth, url, text, email);
+            });
+        }
+
+        else {
+            console.log('It\'s too expensive.');
+            await browser.close();
+            console.log('Browser closed.');
+            scrapePrices(url);
+            console.log('Function relaunched.');
+        }
+
+        
     }
     await page.waitFor(5000);
     }
