@@ -108,7 +108,7 @@ const sendEmail = (auth, url, price, email) => {
   console.log('email', email, 'and price', price);
   const gmail = google.gmail({version: 'v1', auth});
   const raw = makeBody(email,
-   'freezyjchris@gmail.com', 'Great news! we have found a flight matching your criteria.',
+   'noreply.instaflights@gmail.com', 'Great news! we have found a flight matching your criteria.',
    `The cheapest flight price found is ${price} and here's a link where you can purchase your ticket and here's a screentshot of the website.${url} `);
     gmail.users.messages.send({
       auth: auth,

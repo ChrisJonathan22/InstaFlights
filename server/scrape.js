@@ -32,7 +32,7 @@ let scrapePrices = async (url, email, price) => {
 
         await browser.close();
         console.log('Browser closed.');
-        scrapePrices(url);
+        scrapePrices(url, email, price);
         console.log('Function relaunched.');
     }
 
@@ -76,7 +76,7 @@ let scrapePrices = async (url, email, price) => {
             console.log('It\'s too expensive.');
             await browser.close();
             console.log('Browser closed.');
-            scrapePrices(url);
+            scrapePrices(url, email, price);
             console.log('Function relaunched.');
         }
 
