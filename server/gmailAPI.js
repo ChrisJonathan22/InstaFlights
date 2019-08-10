@@ -109,12 +109,12 @@ const sendEmail = (auth, url, price, email) => {
   const gmail = google.gmail({version: 'v1', auth});
   const raw = makeBody(email,
    'noreply.instaflights@gmail.com', 'Great news! we have found a flight matching your criteria.',
-   `The cheapest flight price found is ${price} and here's a link where you can purchase your ticket and here's a screentshot of the website.${url} `);
+   `The cheapest flight price found is ${price} and here's a link where you can purchase your ticket and here's a screentshot of the website.${url} \n Please do not reply to this email.`);
     gmail.users.messages.send({
       auth: auth,
       userId: 'me',
       resource: {
-          raw: raw
+        raw: raw
       }
   }, (err, res) => {
       // res.send(err || res);
