@@ -3,11 +3,11 @@ const bodyParser = require('body-parser');
 const scrape = require('./scrape');
 const mongoose = require('./database').mongooseDB;
 const mongooseUsersModel = require('./database').mongooseUsersModel;
-// console.log(mongoose);
 const cors = require('cors');
 let url;
 let email;
 let price;
+let scrapedUsers = [];
 
 const port = 3000;
 const app = express();
@@ -32,27 +32,43 @@ app.post('/flights', (req, res) => {
     email = obj.email;
     price = obj.price;
 
-    // Create a new user with the data provided
+    // TODO: Before adding a user check to see if the email is in the database already
+    let isUser;
+
+    mongooseUsersModel.find( async (err, users) => {
+        if (err) console.log(err);
+        else {
+            isUser = await users.filter(user => {
+                return user.email === email;
+            });
+            console.log('the value of isUser', isUser);
+            if (isUser) {
+                console.log('Email found in database.');
+            } else {
+                const user = new mongooseUsersModel({ email: email, url: url, price: price });
+                user.save().then(() => console.log('User details saved.'));
+            }
+        }
+    });
+    
     // TODO: Add a functionality which will check if the user is already in the database
     // TODO: Comment as many more of the code
     // ! This comment highlighting comes from Better Comments
-    const user = new mongooseUsersModel({ email: email, url: url, price: price });
-    user.save().then(() => console.log('User details saved.'));
+    
 
+    // Find all users within the database
     mongooseUsersModel.find((err, users) => {
         if (err) console.log(err);
         else {
+            // TODO: Push users into the scraped users array and give them a property of isScraped = true
             // console.log('Here is a list of all the users... ',users);
             users.forEach(user => {
-                console.log('I\'m a user...', user);
-                scrape.scrapePrices(user.url, user.email, user.price);
+                // console.log('I\'m a user...', user);
+                // scrape.scrapePrices(user.url, user.email, user.price);
             })
         }
     });
 
-    console.log('This is the user', user);
-
-    console.log(email);
     /* 
     TODO: Rather than scraping straight away it would be best to loop through all the users
     TODO: and the scrape using the users info from the database
