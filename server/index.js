@@ -22,9 +22,9 @@ app.use(bodyParser.json());
 
 // Create a Post route
 app.post('/flights', (req, res) => {
-    res.json({
-        message: 'Successful request.'
-    });
+    // res.json({
+    //     message: 'Successful request.'
+    // });
     // Turn the response into a JavaScript object
     const obj = JSON.parse(req.body.body);
     // Extract each individual piece of data
@@ -39,14 +39,21 @@ app.post('/flights', (req, res) => {
         if (err) console.log(err);
         else {
             isUser = await users.filter(user => {
+                console.log(user);
                 return user.email === email;
             });
             console.log('the value of isUser', isUser);
-            if (isUser) {
+            if (isUser[0] !== undefined) {
                 console.log('Email found in database.');
+                res.json({
+                    message: 'You\'ve previously submitted a request.'
+                });
             } else {
-                const user = new mongooseUsersModel({ email: email, url: url, price: price });
+                const user = new mongooseUsersModel({ email: email, url: url, price: price, date: new Date() });
                 user.save().then(() => console.log('User details saved.'));
+                res.json({
+                    message: 'Your request has been successfully received.'
+                });
             }
         }
     });
@@ -77,6 +84,15 @@ app.post('/flights', (req, res) => {
     TODO: Skip any user who's request has been handled
     TODO: scrape.scrapePrices(url, email, price);
     */ 
+//    if (isUser[0] !== undefined) {
+//     res.json({
+//         message: 'You\'ve previously submitted a request.'
+//       });
+//    } else {
+//     res.json({
+//         message: 'Your request has been successfully received.'
+//       });
+//    }
 });
 
 app.listen(port, console.log(`listening on port ${port}.`));

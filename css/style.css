@@ -51,3 +51,16 @@
 div[data-element="referral-button"] {
     display: none;
 }
+
+.server-response-text {
+    display: none;
+    text-align: center;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}

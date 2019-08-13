@@ -4,12 +4,29 @@ const flightData = {
     url: ""
 };
 
+let serverResponseText;
+let messageElement = document.querySelector('.server-response-text');
+
 function sendFlightData(data) {
     axios.post('http://localhost:3000/flights', {
         body: JSON.stringify(data)
     })
     .then((res) => {
         console.log(res);
+        serverResponseText = res.data.message;
+        if (serverResponseText.includes('submitted')) {
+            messageElement.classList.add('red');
+        }
+        else {
+            messageElement.classList.add('green');
+        }
+        messageElement.innerText = serverResponseText;
+        messageElement.style.display = 'block';
+
+        setTimeout(() => {
+            messageElement.style.display = 'none';
+            messageElement.innerText = '';
+        }, 3000);
     }).catch((err) => {
         console.log(err);
     });
@@ -23,7 +40,6 @@ submitBtn.addEventListener('click', () => {
     flightData.url = document.querySelector('[data-element="referral-button"] a').href;
     sendFlightData(flightData);
 }, false);
-
 
 
 
