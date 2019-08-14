@@ -4,9 +4,6 @@ const scrape = require('./scrape');
 const mongoose = require('./database').mongooseDB;
 const mongooseUsersModel = require('./database').mongooseUsersModel;
 const cors = require('cors');
-let url;
-let email;
-let price;
 let scrapedUsers = [];
 
 const port = 3000;
@@ -22,15 +19,10 @@ app.use(bodyParser.json());
 
 // Create a Post route
 app.post('/flights', (req, res) => {
-    // res.json({
-    //     message: 'Successful request.'
-    // });
     // Turn the response into a JavaScript object
     const obj = JSON.parse(req.body.body);
     // Extract each individual piece of data
-    url = obj.url;
-    email = obj.email;
-    price = obj.price;
+    let { url, email, price } = obj;
 
     // TODO: Before adding a user check to see if the email is in the database already
     let isUser;

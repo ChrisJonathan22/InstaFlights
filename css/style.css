@@ -55,6 +55,7 @@ div[data-element="referral-button"] {
 .server-response-text {
     display: none;
     text-align: center;
+    padding-top: 20px;
 }
 
 .red {
