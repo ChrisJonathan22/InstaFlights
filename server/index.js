@@ -56,17 +56,17 @@ app.post('/flights', (req, res) => {
     
 
     // Find all users within the database
-    mongooseUsersModel.find((err, users) => {
-        if (err) console.log(err);
-        else {
-            // TODO: Push users into the scraped users array and give them a property of isScraped = true
-            // console.log('Here is a list of all the users... ',users);
-            users.forEach(user => {
-                // console.log('I\'m a user...', user);
-                // scrape.scrapePrices(user.url, user.email, user.price);
-            })
-        }
-    });
+    // mongooseUsersModel.find((err, users) => {
+    //     if (err) console.log(err);
+    //     else {
+    //         // TODO: Push users into the scraped users array and give them a property of isScraped = true
+    //         // console.log('Here is a list of all the users... ',users);
+    //         users.forEach(user => {
+    //             // console.log('I\'m a user...', user);
+    //             scrape.scrapePrices(user.url, user.email, user.price);
+    //         });
+    //     }
+    // });
 
     /* 
     TODO: Rather than scraping straight away it would be best to loop through all the users
@@ -76,15 +76,23 @@ app.post('/flights', (req, res) => {
     TODO: Skip any user who's request has been handled
     TODO: scrape.scrapePrices(url, email, price);
     */ 
-//    if (isUser[0] !== undefined) {
-//     res.json({
-//         message: 'You\'ve previously submitted a request.'
-//       });
-//    } else {
-//     res.json({
-//         message: 'Your request has been successfully received.'
-//       });
-//    }
+
+});
+
+/* 
+TODO: Create a function which will find all users and fetch their flights
+TODO: Run the function when the app starts but also call the function when new users are added to the database
+*/ 
+mongooseUsersModel.find((err, users) => {
+    if (err) console.log(err);
+    else {
+        // TODO: Push users into the scraped users array and give them a property of isScraped = true
+        // console.log('Here is a list of all the users... ',users);
+        users.forEach(user => {
+            // console.log('I\'m a user...', user);
+            scrape.scrapePrices(user.url, user.email, user.price);
+        });
+    }
 });
 
 app.listen(port, console.log(`listening on port ${port}.`));
