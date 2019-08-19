@@ -25,6 +25,36 @@ app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// * If scraped do nothing else scrape
+function checkIfScrapedAndScrape(users) {
+    // * Go through a list of users found on the database
+    users.forEach(user => {
+        // * For each user read a file which contains a list of scraped users
+
+        fs.readFile('./scrapedAccounts.json', (err, file) => {
+            let data = JSON.parse(file).scrapedList;
+            // * If the email is found log a message and if not
+            if (data.indexOf(user.email) >= 0) {
+                console.log('The data has been previously scraped for this email.');
+            } // * scrape the data and add the email to the list of scraped users
+            else {
+                // * scrape.scrapePrices(user.url, user.email, user.price);
+                data.push(user.email)
+                let scrapedAccounts = {
+                    "scrapedList": data
+                };
+                scrapedAccounts = JSON.stringify(scrapedAccounts);
+                fs.writeFile('./scrapedAccounts.json', scrapedAccounts, (err) => {
+                    if (err) console.log('Error writing file', err);
+                    else {
+                        console.log('Successfully added the email to the JSON file containing the scraped list.');
+                    }
+                });
+            }
+        });
+    });
+}
+
 // * Create a Post route
 
 app.post('/flights', (req, res) => {
@@ -38,7 +68,7 @@ app.post('/flights', (req, res) => {
 
     // * Find all the users within the database
     mongooseUsersModel.find( async (err, users) => {
-        if (err) console.log(err);
+        if (err) console.error(err);
         else {
             // * For each post request check if the new request email is in the database
             isUser = await users.filter(user => {
@@ -62,55 +92,15 @@ app.post('/flights', (req, res) => {
                 });
             }
         }
-        // * Go through a list of users found on the database
-        users.forEach(user => {
-            // * For each user read a file which contains a list of scraped users
-            
-            fs.readFile('./scrapedAccounts.json', (err, file) => {
-                let data = JSON.parse(file).scrapedList;
-                // * If the email is found log a message and if not
-                if (data.indexOf(user.email) >= 0) {
-                    console.log('The data has been previously scraped for this email.');
-                } // * scrape the data and add the email to the list of scraped users
-                else {
-                    // scrape.scrapePrices(user.url, user.email, user.price);
-                    data.push(user.email)
-                    let scrapedAccounts = {
-                        "scrapedList": data
-                    };
-                    scrapedAccounts = JSON.stringify(scrapedAccounts);
-                    fs.writeFile('./scrapedAccounts.json', scrapedAccounts, (err) => {
-                        if (err) console.log('Error writing file', err);
-                        else {
-                            console.log('Successfully added the email to the JSON file containing the scraped list.');
-                        }
-                    });
-                }
-            });
-        });
+        checkIfScrapedAndScrape(users);
     });
 });
 
 
-
 mongooseUsersModel.find((err, users) => {
-    if (err) console.log(err);
+    if (err) console.error(err);
     else {
-        // TODO: Push users into the scraped users array and give them a property of isScraped = true
-        // console.log('Here is a list of all the users... ',users);
-        users.forEach(user => {
-            // console.log('I\'m a user...', user);
-            fs.readFile('./scrapedAccounts.json', (err, file) => {
-                let data = JSON.parse(file).scrapedList;
-                if (data.indexOf(user.email) >= 0) {
-                    console.log('The data has been previously scraped for this email.');
-                } else {
-                    // scrape.scrapePrices(user.url, user.email, user.price);
-                    // data.push(user.email);
-                }
-            });
-            
-        });
+        checkIfScrapedAndScrape(users);
     }
 });
 
