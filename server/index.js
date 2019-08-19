@@ -73,8 +73,18 @@ app.post('/flights', (req, res) => {
                     console.log('The data has been previously scraped for this email.');
                 } // * scrape the data and add the email to the list of scraped users
                 else {
-                    scrape.scrapePrices(user.url, user.email, user.price);
-                    data.push(user.email);
+                    // scrape.scrapePrices(user.url, user.email, user.price);
+                    data.push(user.email)
+                    let scrapedAccounts = {
+                        "scrapedList": data
+                    };
+                    scrapedAccounts = JSON.stringify(scrapedAccounts);
+                    fs.writeFile('./scrapedAccounts.json', scrapedAccounts, (err) => {
+                        if (err) console.log('Error writing file', err);
+                        else {
+                            console.log('Successfully added the email to the JSON file containing the scraped list.');
+                        }
+                    });
                 }
             });
         });

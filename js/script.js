@@ -1,17 +1,20 @@
 let serverResponseText;
 let messageElement = document.querySelector('.server-response-text');
 
+// * Function to switch classes
 function switchClasses (element, oldClass, newClass) {
     element.classList.remove(oldClass);
     element.classList.add(newClass);
 }
 
+// * Function to display or hide server messages
 function displayMessage (element, message, action) {
     element.innerText = message;
     element.style.display = action;
 }
 
-function sendFlightData (data) {
+// * Function to send data to the database
+function sendFlightData () {
     const flightData = {
         email: "",
         price: 0,
@@ -50,8 +53,10 @@ function sendFlightData (data) {
     }    
 }
 
+// * Submit button
 const submitBtn = document.querySelector('.submit-btn');
 
+// * Click event for submit button
 submitBtn.addEventListener('click', () => {
     sendFlightData();
 }, false);
