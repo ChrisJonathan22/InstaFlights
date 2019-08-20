@@ -13,6 +13,11 @@ const mongoose = require('./database').mongooseDB;
 const mongooseUsersModel = require('./database').mongooseUsersModel;
 const cors = require('cors');
 const fs = require('fs');
+const schedule = require('node-schedule');
+
+var j = schedule.scheduleJob({hour: 23, minute: 59}, function(){
+    resetScrapeList();
+});
 
 const port = 3000;
 const app = express();
@@ -24,6 +29,24 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+function resetScrapeList() {
+    fs.readFile('./scrapedAccounts.json', (err, file) => {
+        if (err) console.error('There\'s been an error trying to read the file');
+        else {
+            let scrapedAccounts = {
+                "scrapedList": []
+            };
+            scrapedAccounts = JSON.stringify(scrapedAccounts);
+            fs.writeFile('./scrapedAccounts.json', scrapedAccounts, (err) => {
+                if (err) console.log('Error writing file', err);
+                else {
+                    console.log('Successfully reset JSON file containing the scraped list.');
+                }
+            });
+        }
+    });
+}
 
 // * If scraped do nothing else scrape
 function checkIfScrapedAndScrape(users) {
