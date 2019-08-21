@@ -11,8 +11,9 @@ const bodyParser = require('body-parser');
 const scrape = require('./scrape');
 const mongoose = require('./database').mongooseDB;
 const mongooseUsersModel = require('./database').mongooseUsersModel;
+const resetScrapeList = require('./functions').resetScrapeList;
+const checkIfScrapedAndScrape = require('./functions').checkIfScrapedAndScrape;
 const cors = require('cors');
-const fs = require('fs');
 const schedule = require('node-schedule');
 
 var j = schedule.scheduleJob({hour: 23, minute: 59}, function(){
@@ -30,53 +31,6 @@ app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-function resetScrapeList() {
-    fs.readFile('./scrapedAccounts.json', (err, file) => {
-        if (err) console.error('There\'s been an error trying to read the file');
-        else {
-            let scrapedAccounts = {
-                "scrapedList": []
-            };
-            scrapedAccounts = JSON.stringify(scrapedAccounts);
-            fs.writeFile('./scrapedAccounts.json', scrapedAccounts, (err) => {
-                if (err) console.log('Error writing file', err);
-                else {
-                    console.log('Successfully reset JSON file containing the scraped list.');
-                }
-            });
-        }
-    });
-}
-
-// * If scraped do nothing else scrape
-function checkIfScrapedAndScrape(users) {
-    // * Go through a list of users found on the database
-    users.forEach(user => {
-        // * For each user read a file which contains a list of scraped users
-
-        fs.readFile('./scrapedAccounts.json', (err, file) => {
-            let data = JSON.parse(file).scrapedList;
-            // * If the email is found log a message and if not
-            if (data.indexOf(user.email) >= 0) {
-                console.log('The data has been previously scraped for this email.');
-            } // * scrape the data and add the email to the list of scraped users
-            else {
-                // * scrape.scrapePrices(user.url, user.email, user.price);
-                data.push(user.email)
-                let scrapedAccounts = {
-                    "scrapedList": data
-                };
-                scrapedAccounts = JSON.stringify(scrapedAccounts);
-                fs.writeFile('./scrapedAccounts.json', scrapedAccounts, (err) => {
-                    if (err) console.log('Error writing file', err);
-                    else {
-                        console.log('Successfully added the email to the JSON file containing the scraped list.');
-                    }
-                });
-            }
-        });
-    });
-}
 
 // * Create a Post route
 
@@ -118,7 +72,6 @@ app.post('/flights', (req, res) => {
         checkIfScrapedAndScrape(users);
     });
 });
-
 
 mongooseUsersModel.find((err, users) => {
     if (err) console.error(err);
