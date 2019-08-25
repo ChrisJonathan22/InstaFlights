@@ -5,6 +5,9 @@ const tesseract = require('tesseract.js');
 const randomUserAgent = require('random-useragent');
 const puppeeter = require('puppeteer');
 
+// Find a way to scrape one by one rather than doing multiple scrapes.
+// Also change each screenshot individually and delete all screenshots at 11:59pm.
+
 let scrapePrices = async (url, email, price) => {
     try {
     let browser = await puppeeter.launch( { headless: false } );
@@ -37,40 +40,42 @@ let scrapePrices = async (url, email, price) => {
     }
 
     else {
+        await page.waitFor(15000);
+        let screenshotValue
+
+        await page.screenshot({path: './images/screenshot.png'});
+        console.log('screenshot!');
         await page.waitFor(5000);
-        const element = await page.$('[data-tab="price"] .fqs-price');
-        const text = await page.evaluate(element => element.textContent, element);
-        let priceAsNumber = text.replace(/\D/g,'');
-        priceAsNumber = parseInt(priceAsNumber);
-        console.log('price from site', priceAsNumber);
-        console.log('price from client', price);
 
-        if (priceAsNumber <= price) {
-            console.log('This is the cheapest price', text);
-            await page.screenshot({path: 'screenshot.png'});
-            console.log('screenshot!');
-            await page.waitFor(5000);
+        tesseract.recognize('./images/screenshot.png', {
+            lang: 'eng'
+        })
+        .progress(progress => {
+            // console.log('progress', progress.progress);
+            let p = (progress.progress * 100).toFixed(2);
+            // console.log('this is the status', p);
+        })
+        .then(result => {
+            console.log('result', result.text);
+            // Find numbers followed by £ then add those to an array, remove the pound sign and compare against user price.
+            screenshotValue = result.text;
+            screenshotValue = screenshotValue.match(/£[0-9]{1,}/g)[1].replace(/\D/g,'');
+            screenshotValue = parseInt(screenshotValue);
+            // Match pound signs followed by one or more numbers and then figure it if those values === or fall under the user price.
+            console.log(screenshotValue.match(/£[0-9]{1,}/g));
+            tesseract.terminate();
+        });
 
-            tesseract.recognize('./screenshot.png', {
-                lang: 'eng'
-            })
-            .progress(progress => {
-                // console.log('progress', progress.progress);
-                let p = (progress.progress * 100).toFixed(2);
-                // console.log('this is the status', p);
-            })
-            .then(result => {
-                console.log('result', result.text);
-                tesseract.terminate();
-            });
+        if (screenshotValue <= price) {
             fs.readFile('credentials.json', async (err, content) => {
                 if (err) return console.log('Error loading client secret file:', err);
                 // Authorize a client with credentials, then call the Gmail API.
                 const auth = await authorize(JSON.parse(content));
                 console.log('this is the authentication', auth);
-                sendEmail(auth, url, text, email);
+                sendEmail(auth, url, value, email);
             });
         }
+
 
         else {
             console.log('It\'s too expensive.');
