@@ -29,8 +29,8 @@ let scrapePrices = async (url, email, price) => {
     let isCaptcha = pageContentAsText.includes('Are you a person or a robot?');
     
     if ( isCaptcha ) {
-        console.log(`Captcha = isCaptcha`);
-        console.log('Wait for 1 seconds and then close the browser.');
+        console.log(`Captcha = true`);
+        console.log('Close the browser after 1 second.');
         await page.waitFor(1000);
 
         await browser.close();
@@ -40,14 +40,14 @@ let scrapePrices = async (url, email, price) => {
     }
 
     else {
-        await page.waitFor(15000);
+        await page.waitFor(10000);
         let screenshotValue
 
-        await page.screenshot({path: './images/screenshot.png'});
+        await page.screenshot({path: `./images/screenshot-${rand}.png`});
         console.log('screenshot!');
         await page.waitFor(5000);
 
-        tesseract.recognize('./images/screenshot.png', {
+        tesseract.recognize(`./images/screenshot-${rand}.png`, {
             lang: 'eng'
         })
         .progress(progress => {
@@ -55,37 +55,46 @@ let scrapePrices = async (url, email, price) => {
             let p = (progress.progress * 100).toFixed(2);
             // console.log('this is the status', p);
         })
-        .then(result => {
+        .then(async (result) => {
             console.log('result', result.text);
             // Find numbers followed by £ then add those to an array, remove the pound sign and compare against user price.
             screenshotValue = result.text;
-            screenshotValue = screenshotValue.match(/£[0-9]{1,}/g)[1].replace(/\D/g,'');
-            screenshotValue = parseInt(screenshotValue);
-            // Match pound signs followed by one or more numbers and then figure it if those values === or fall under the user price.
-            console.log(screenshotValue.match(/£[0-9]{1,}/g));
-            tesseract.terminate();
+            console.log('this is screenshotValue', screenshotValue);
+
+            if (screenshotValue.match(/£[0-9]{1,}/g) === null) {
+                browser.close();
+                console.log('Browser closed because the page took too long to show the results.');
+                scrapePrices(url, email, price);
+                console.log('Function relaunched.');
+            }
+
+            else {
+                screenshotValue = screenshotValue.match(/£[0-9]{1,}/g)[1].replace(/\D/g,'');
+                screenshotValue = parseInt(screenshotValue);
+                // Match pound signs followed by one or more numbers and then figure it if those values === or fall under the user price.
+                tesseract.terminate();
+
+                if (screenshotValue <= price) {
+                    fs.readFile('credentials.json', async (err, content) => {
+                        if (err) return console.log('Error loading client secret file:', err);
+                        // Authorize a client with credentials, then call the Gmail API.
+                        const auth = await authorize(JSON.parse(content));
+                        console.log('this is the authentication', auth);
+                        sendEmail(auth, url, screenshotValue, email);
+                    });
+                }
+        
+        
+                else {
+                    console.log('It\'s too expensive.');
+                    await browser.close();
+                    console.log('Browser closed.');
+                    scrapePrices(url, email, price);
+                    console.log('Function relaunched.');
+                }
+            }
         });
 
-        if (screenshotValue <= price) {
-            fs.readFile('credentials.json', async (err, content) => {
-                if (err) return console.log('Error loading client secret file:', err);
-                // Authorize a client with credentials, then call the Gmail API.
-                const auth = await authorize(JSON.parse(content));
-                console.log('this is the authentication', auth);
-                sendEmail(auth, url, value, email);
-            });
-        }
-
-
-        else {
-            console.log('It\'s too expensive.');
-            await browser.close();
-            console.log('Browser closed.');
-            scrapePrices(url, email, price);
-            console.log('Function relaunched.');
-        }
-
-        
     }
     await page.waitFor(5000);
     }
