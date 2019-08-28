@@ -69,6 +69,7 @@ let scrapePrices = async (url, email, price) => {
             }
 
             else {
+                // console.log('Prices extracted from string...', screenshotValue);
                 screenshotValue = screenshotValue.match(/£[0-9]{1,}/g)[1].replace(/\D/g,'');
                 screenshotValue = parseInt(screenshotValue);
                 // Match pound signs followed by one or more numbers and then figure it if those values === or fall under the user price.
