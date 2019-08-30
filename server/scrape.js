@@ -5,9 +5,6 @@ const tesseract = require('tesseract.js');
 const randomUserAgent = require('random-useragent');
 const puppeeter = require('puppeteer');
 
-// Find a way to scrape one by one rather than doing multiple scrapes.
-// Also change each screenshot individually and delete all screenshots at 11:59pm.
-
 let scrapePrices = async (url, email, price) => {
     try {
     let browser = await puppeeter.launch( { headless: false } );

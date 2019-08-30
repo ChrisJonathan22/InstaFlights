@@ -1,20 +1,14 @@
-/* 
-TODO: Create a function which will find all users and fetch their flights
-TODO: Run the function when the app starts but also call the function when new users are added to the database
-*/ 
-
 // TODO: Comment as many more of the code
 // ! This comment highlighting comes from Better Comments
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const scrape = require('./scrape');
-const mongoose = require('./database').mongooseDB;
 const mongooseUsersModel = require('./database').mongooseUsersModel;
 const resetScrapeList = require('./functions').resetScrapeList;
 const checkIfScrapedAndScrape = require('./functions').checkIfScrapedAndScrape;
 const cors = require('cors');
 const schedule = require('node-schedule');
+require('dotenv').config();
 
 var j = schedule.scheduleJob({hour: 23, minute: 59}, function(){
     resetScrapeList();
@@ -85,3 +79,4 @@ app.listen(port, console.log(`listening on port ${port}.`));
 
 
 
+console.log('my api key ',process.env.API_KEY);

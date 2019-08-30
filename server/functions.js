@@ -20,10 +20,6 @@ function resetScrapeList() {
     });
 }
 
-
-// !Work on this find a way to scrape after checking the JSON file
-// ! If an email is found in the database but the link is different then change the link
-
 // * If scraped do nothing else scrape
 function checkIfScrapedAndScrape(users) {
     // * Go through a list of users found on the database

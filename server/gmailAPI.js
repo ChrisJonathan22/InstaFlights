@@ -2,13 +2,6 @@ const Base64 = require('js-base64').Base64;
 const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
-// Work on successfully return the authentication object with the credentials from authorize
-
-// Client ID and API key from the Developer Console
-const CLIENT_ID = '153961427173-8sn3madr2pcsa54j8lf5c6thk0q07ujo.apps.googleusercontent.com';
-const API_KEY = 'AIzaSyBJO6XgMu0sxJK64jtc_PAU677eQWF4yIs';
-
-
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://mail.google.com/',
@@ -19,14 +12,6 @@ const SCOPES = ['https://mail.google.com/',
 // created automatically when the authorization flow completes for the first
 // time.
 const TOKEN_PATH = 'token.json';
-
-// Load client secrets from a local file.
-// fs.readFile('credentials.json', (err, content) => {
-//   if (err) return console.log('Error loading client secret file:', err);
-//   // Authorize a client with credentials, then call the Gmail API.
-//   // authorize(JSON.parse(content), sendEmail);
-//   authorize(JSON.parse(content), sendEmail);
-// });
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -109,7 +94,7 @@ const sendEmail = (auth, url, price, email) => {
   const gmail = google.gmail({version: 'v1', auth});
   const raw = makeBody(email,
    'noreply.instaflights@gmail.com', 'Great news! we have found a flight matching your criteria.',
-   `The cheapest flight price found is £${price} and here's a link where you can purchase your ticket and here's a screentshot of the website.${url} \n Please do not reply to this email.`);
+   `The cheapest flight price found is £${price} and here's a link where you can purchase your ticket ${url}. \n Please do not reply to this email.`);
     gmail.users.messages.send({
       auth: auth,
       userId: 'me',
@@ -117,16 +102,10 @@ const sendEmail = (auth, url, price, email) => {
         raw: raw
       }
   }, (err, res) => {
-      // res.send(err || res);
       if (err) {
         console.log('There has been an error', err);
         throw err;
-      }
-      // else {
-      //   console.log('Email successfully sent! status = ', res.status);
-      //   console.log(res);
-      // }
-      else {
+      } else {
         let status = res.status ? res.status : 'Status unavailable';
         console.log('Email successfully sent! status = ', status);
         console.log('Email sent!');

@@ -5,8 +5,5 @@ const UsersSchema = new mongoose.Schema({
 });
 const Users = mongoose.model('Users', UsersSchema);
 
-// const user001 = new Users({ email: 'christophereko@hotmail.fr', price: 500 });
-// user001.save().then(() => console.log('User details saved.'));
-
 module.exports.mongooseDB = mongoose;
 module.exports.mongooseUsersModel = Users;
