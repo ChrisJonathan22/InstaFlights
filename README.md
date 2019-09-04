@@ -1,6 +1,6 @@
 # InstaFlights
 
-InstaFlights allows users to select a flight and a price they’re willing to pay for the flight, a search will be conducted and if there's a match an email will be sent to the user.
+InstaFlights allows users to select a flight and a price they are willing to pay for the flight, a search will be conducted and if there is a match an email will be sent to the user.
 
 It’s built with HTML, CSS, JS & Node JS + NPM packages such as googleapis, mongoose, node-schedule, puppeteer, tesseract and a few more which can be found within the package.json file.
 
